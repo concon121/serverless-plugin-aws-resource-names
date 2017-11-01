@@ -1,0 +1,21 @@
+{
+	"extends": "standard",
+	"globals": {
+		"atom": true,
+		"beforeEach": true,
+		"describe": true,
+		"expect": true,
+		"it": true,
+		"module": true,
+		"require": true,
+		"spyOn": true
+	},
+	"rules": {
+		"semi": ["error", "always"],
+		"space-before-function-paren": ["error", {
+			"anonymous": "ignore",
+			"named": "ignore",
+			"asyncArrow": "ignore"
+		}],
+	}
+}
