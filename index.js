@@ -1,9 +1,9 @@
-'use strict';
+'use strict'
 
 const naming = require('./naming')
 const path = require('path'),
-  fs = require('fs'),
-  BbPromise = require('bluebird'); // Serverless uses Bluebird Promises and we recommend you do to because they provide more than your average Promise :)
+    fs = require('fs'),
+    BbPromise = require('bluebird') // Serverless uses Bluebird Promises and we recommend you do to because they provide more than your average Promise :)
 
 console.log(typeof ServerlessPlugin)
 
@@ -12,34 +12,30 @@ console.log(typeof ServerlessPlugin)
  */
 
 class AWSNaming {
+    constructor(serverless, options) {
+        const self = this
+        this.serverless = serverless
+        this.service = serverless.service
+        this.serverlessLog = serverless.cli.log.bind(serverless.cli)
+        this.options = options
 
-  constructor(serverless, options) {
-    const self = this
-    this.serverless = serverless;
-    this.service = serverless.service;
-    this.serverlessLog = serverless.cli.log.bind(serverless.cli);
-    this.options = options;
+        this.hooks = {
+            'before:package:*': self.start(),
+            'before:deploy:*': self.start(),
+            'before:config:*': self.start()
+        }
+    }
 
-    this.hooks = {
+    start() {
+        var aws = this.serverless.getProvider('aws')
+        Object.assign(aws.naming, naming)
+        this.serverless.cli.log('AWS NAMING')
+        this.serverless.cli.log(aws.naming)
+        naming.setFunctionNames(aws)
+    }
 
-      'before:package:*': self.start(),
-      'before:deploy:*': self.start(),
-
-    };
-  }
-
-  start() {
-    var aws = this.serverless.getProvider('aws')
-    Object.assign(aws.naming, naming)
-    this.serverless.cli.log('AWS NAMING')
-    this.serverless.cli.log(aws.naming)
-  }
-
-  static getName() {
-    return 'serverless-aws-resource-names';
-  }
+    // static getName() {
+    // return 'serverless-aws-resource-names';
+    // }
 }
-
-//new ServerlessPluginBoilerplate()
-
-module.exports = AWSNaming;
+module.exports = AWSNaming

@@ -11,11 +11,12 @@
 		"spyOn": true
 	},
 	"rules": {
-		"semi": ["error", "always"],
+		"semi": ["error", "never"],
 		"space-before-function-paren": ["error", {
 			"anonymous": "ignore",
 			"named": "ignore",
 			"asyncArrow": "ignore"
 		}],
+        "indent": ["error", 4]
 	}
 }
