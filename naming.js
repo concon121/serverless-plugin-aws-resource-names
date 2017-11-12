@@ -7,7 +7,7 @@ module.exports = {
 
     _getMappings() {
         var data = fs.readFileSync(this.provider.serverless.service.custom['serverless-aws-resource-names'].source, 'utf8')
-        data = data.replace(new RegExp('\\$stage', 'g'), this.provider.getStage())
+        data = data.replace(new RegExp('\\$stage', 'g'), this.provider.getStage() || 'dev')
         data = data.replace(new RegExp('\\$region', 'g'), this.provider.getRegion())
         data = data.replace(new RegExp('\\$service', 'g'), this.provider.serverless.service.service)
         return JSON.parse(data)
