@@ -1,15 +1,6 @@
 'use strict'
 
 const naming = require('./naming')
-const path = require('path'),
-    fs = require('fs'),
-    BbPromise = require('bluebird') // Serverless uses Bluebird Promises and we recommend you do to because they provide more than your average Promise :)
-
-console.log(typeof ServerlessPlugin)
-
-/**
- * ServerlessPluginBoierplate
- */
 
 class AWSNaming {
     constructor(serverless, options) {
@@ -33,9 +24,5 @@ class AWSNaming {
         this.serverless.cli.log(aws.naming)
         naming.setFunctionNames(aws)
     }
-
-    // static getName() {
-    // return 'serverless-aws-resource-names';
-    // }
 }
 module.exports = AWSNaming
