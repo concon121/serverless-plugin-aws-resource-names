@@ -1,4 +1,5 @@
 # serverless-plugin-aws-resource-names
+[![serverless](http://public.serverless.com/badges/v3.svg)](http://www.serverless.com)
 
 Serverless plugin to enable custom AWS resource names
 
