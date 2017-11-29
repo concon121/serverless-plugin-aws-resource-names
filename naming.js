@@ -32,6 +32,9 @@ module.exports = {
     getApiGatewayName() {
         return this._getMappings().apiGateway
     },
+    getLogGroupName() {
+        return this.__getMappings().logGroup
+    },
     setFunctionNames(provider) {
         const self = this
         if (!self.provider) {
