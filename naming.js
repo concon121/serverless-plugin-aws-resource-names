@@ -33,7 +33,7 @@ module.exports = {
         return this._getMappings().apiGateway
     },
     getLogGroupName() {
-        return this.__getMappings().logGroup
+        return this._getMappings().logGroup
     },
     setFunctionNames(provider) {
         const self = this
