@@ -43,7 +43,16 @@ module.exports = {
                 if (!functionObj.events) {
                     self.provider.serverless.service.functions[functionName].events = []
                 }
-                self.provider.serverless.service.functions[functionName].name = mappings.lambda.replace('$lambda', functionName)
+                if (typeof mappings.lambda === 'object') {
+                    for (var property in mappings.lambda) {
+                        if (mappings.lambda.hasOwnProperty(property)) {
+                            mappings.lambda[property] = mappings.lambda[property].replace('$lambda', functionName)
+                        }
+                    }
+                    self.provider.serverless.service.functions[functionName].name = mappings.lambda
+                } else {
+                    self.provider.serverless.service.functions[functionName].name = mappings.lambda.replace('$lambda', functionName)
+                }
             })
         }
     }
