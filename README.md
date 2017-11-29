@@ -1,4 +1,5 @@
 # serverless-plugin-aws-resource-names
+
 [![serverless](http://public.serverless.com/badges/v3.svg)](http://www.serverless.com)
 
 Serverless plugin to enable custom AWS resource names
@@ -45,7 +46,8 @@ Create the `mapping.json` file in your project and modify the names to your hear
             ]
         },
         "apiGateway": "$stage-$service",
-        "lambda": "$service-$stage-$lambda"
+        "lambda": "$service-$stage-$lambda",
+        "logGroup": "/aws/lambda/$service-$stage-$lambda"
     }
 
 ### Mapping Variable Reference
