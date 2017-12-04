@@ -15,7 +15,6 @@ module.exports = {
         } else {
             data = data.replace(new RegExp('\\$lambda', 'g'), 'lambdaName')
         }
-        console.log(data)
         return JSON.parse(data)
     },
 
@@ -42,7 +41,6 @@ module.exports = {
         const self = this
         var logGroup
         _.forEach(self.provider.serverless.service.functions, (functionObj, name) => {
-            console.log(JSON.stringify(functionName))
             if (JSON.stringify(functionName).includes(name + '"') || JSON.stringify(functionName).includes(name + '-')) {
                 logGroup = this._getMappings(name).logGroup
                 return false
