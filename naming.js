@@ -42,7 +42,7 @@ module.exports = {
         const self = this
         var logGroup
         _.forEach(self.provider.serverless.service.functions, (functionObj, name) => {
-            if (JSON.stringify(functionName).includes(name)) {
+            if (JSON.stringify(functionName).includes(name + '"')) {
                 logGroup = this._getMappings(name).logGroup
                 return false
             }
