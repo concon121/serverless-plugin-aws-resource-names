@@ -2,12 +2,16 @@
 
 const fs = require('fs')
 const _ = require('lodash')
+const uuidv4 = require('uuid/v4');
 
 module.exports = {
+    dataSource: undefined,
 
     _getMappings(lambdaName) {
-        var data = fs.readFileSync(this.provider.serverless.service.custom['serverless-aws-resource-names'].source, 'utf8')
-        data = data.replace(new RegExp('\\$stage', 'g'), this.provider.getStage() || 'dev')
+        if (!this.dataSource) {
+            this.dataSource = fs.readFileSync(this.provider.serverless.service.custom['serverless-aws-resource-names'].source, 'utf8').replace(new RegExp('\\$rand', 'g'), uuidv4())
+        }
+        var data = this.dataSource.replace(new RegExp('\\$stage', 'g'), this.provider.getStage() || 'dev')
         data = data.replace(new RegExp('\\$region', 'g'), this.provider.getRegion())
         data = data.replace(new RegExp('\\$service', 'g'), this.provider.serverless.service.service)
         if (lambdaName) {
@@ -39,6 +43,7 @@ module.exports = {
     },
     getLogGroupName(functionName) {
         const self = this
+        console.log('Getting log group name')
         var logGroup
         _.forEach(self.provider.serverless.service.functions, (functionObj, name) => {
             if (JSON.stringify(functionName).includes(name + '"') || JSON.stringify(functionName).includes(name + '-')) {
@@ -63,5 +68,38 @@ module.exports = {
                 self.provider.serverless.service.functions[functionName].name = mappings.lambda
             })
         }
+        console.log(self)
+        console.log(self.provider.compiledCloudFormationTemplate)
+    },
+    fixLogGroups(args) {
+        console.log('Fixing log groups!')
+        console.log(this, args)
+        var cft = this.serverless.service.provider.compiledCloudFormationTemplate
+        var role = cft.Resources.IamRoleLambdaExecution
+        console.log(cft.Resources)
+        for (var policy of role.Properties.Policies) {
+            for (var statement of policy.PolicyDocument.Statement) {
+                statement.Resource = []
+                if (statement.Action.includes("logs:CreateLogStream")) {
+                    for (var resource of Object.keys(cft.Resources)) {
+                        if (resource.includes("LogGroup")) {
+                            statement.Resource.push({
+                                "Fn::Sub": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${" + resource + "}:*"
+                            })
+                        }
+                    }
+                }
+                if (statement.Action.includes("logs:PutLogEvents")) {
+                    for (var resource of Object.keys(cft.Resources)) {
+                        if (resource.includes("LogGroup")) {
+                            statement.Resource.push({
+                                "Fn::Sub": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${" + resource + "}:*:*"
+                            })
+                        }
+                    }
+                }
+            }
+        }
+
     }
 }

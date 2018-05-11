@@ -1,7 +1,7 @@
 {
     "name": "serverless-aws-resource-names",
     "main": "index",
-    "version": "0.0.9",
+    "version": "0.0.10",
     "description": "Serverless plugin to enable custom AWS resource names",
     "keywords": [
         "serverless",
@@ -18,7 +18,8 @@
     "license": "MIT",
     "dependencies": {
         "bluebird": "^3.0.6",
-        "lodash": "^4.17.4"
+        "lodash": "^4.17.4",
+        "uuid": "^3.2.1"
     },
     "devDependencies": {
         "codeclimate-test-reporter": "^0.4.1",

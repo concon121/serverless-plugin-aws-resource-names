@@ -56,3 +56,4 @@ Create the `mapping.json` file in your project and modify the names to your hear
 -   **$stage** - Refers to the stage which you deploy to via serverless e.g. sls deploy **-s dev**
 -   **$region** - Refers to the AWS region that you are deploying to.  This is configured in your serverless.yml under the _provider.region_ attribute or by your AWS CLI configuration.
 -   **$lambda** - Refers to the name of your lambda function, defined in your serverless.yml under the _functions_ attribute.
+-   **$rand** - Globally replaces all instances with a random UUID.
