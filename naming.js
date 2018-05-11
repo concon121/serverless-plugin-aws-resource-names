@@ -43,7 +43,6 @@ module.exports = {
     },
     getLogGroupName(functionName) {
         const self = this
-        console.log('Getting log group name')
         var logGroup
         _.forEach(self.provider.serverless.service.functions, (functionObj, name) => {
             if (JSON.stringify(functionName).includes(name + '"') || JSON.stringify(functionName).includes(name + '-')) {
@@ -68,15 +67,10 @@ module.exports = {
                 self.provider.serverless.service.functions[functionName].name = mappings.lambda
             })
         }
-        console.log(self)
-        console.log(self.provider.compiledCloudFormationTemplate)
     },
     fixLogGroups(args) {
-        console.log('Fixing log groups!')
-        console.log(this, args)
         var cft = this.serverless.service.provider.compiledCloudFormationTemplate
         var role = cft.Resources.IamRoleLambdaExecution
-        console.log(cft.Resources)
         for (var policy of role.Properties.Policies) {
             for (var statement of policy.PolicyDocument.Statement) {
                 statement.Resource = []
