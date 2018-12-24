@@ -11,7 +11,11 @@ module.exports = {
         if (!this.dataSource) {
             this.dataSource = fs.readFileSync(this.provider.serverless.service.custom['serverless-aws-resource-names'].source, 'utf8').replace(new RegExp('\\$rand', 'g'), uuidv4())
         }
-        var data = this.dataSource.replace(new RegExp('\\$stage', 'g'), this.provider.getStage() || 'dev')
+        var data = this.dataSource
+        _.forIn(this.provider.serverless.service.custom['serverless-aws-resource-names'].variables, (replacement, variableName) => {
+            data = data.replace(new RegExp(`\\$${variableName}`, 'g'), replacement)
+        })
+        data = data.replace(new RegExp('\\$stage', 'g'), this.provider.getStage() || 'dev')
         data = data.replace(new RegExp('\\$region', 'g'), this.provider.getRegion())
         data = data.replace(new RegExp('\\$service', 'g'), this.provider.serverless.service.service)
         if (lambdaName) {
