@@ -57,3 +57,25 @@ Create the `mapping.json` file in your project and modify the names to your hear
 -   **$region** - Refers to the AWS region that you are deploying to.  This is configured in your serverless.yml under the _provider.region_ attribute or by your AWS CLI configuration.
 -   **$lambda** - Refers to the name of your lambda function, defined in your serverless.yml under the _functions_ attribute.
 -   **$rand** - Globally replaces all instances with a random UUID.
+
+### Custom Variables
+
+You can define custom variables in your `serverless.yml` file:
+
+    plugins:
+      - serverless-aws-resource-names
+    custom:
+      serverless-aws-resource-names:
+        source: mapping.json
+        variables:
+          functionSuffix: func
+
+And then use these custom variables in your `mapping.json` file:
+
+    {
+        "lambda": "$service-$stage-$lambda-$functionSuffix",
+    }
+
+Here we've defined a custom variable `functionSuffix` and assigned it the value `'func'`.
+
+This will append the string `'func'` to all of your Lambda function names.
