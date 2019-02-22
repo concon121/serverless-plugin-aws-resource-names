@@ -2,10 +2,61 @@
 
 const fs = require('fs')
 const _ = require('lodash')
-const uuidv4 = require('uuid/v4');
+const uuidv4 = require('uuid/v4')
 
 module.exports = {
     dataSource: undefined,
+
+    getCompiledTemplateFileName() {
+        return this._getMappings().template.compiled
+    },
+
+    getCoreTemplateFileName() {
+        return this._getMappings().template.core
+    },
+
+    getStackName() {
+        return this._getMappings().stack
+    },
+
+    getRoleName() {
+        return this._getMappings().role
+    },
+
+    getPolicyName() {
+        return this._getMappings().policy
+    },
+
+    getApiGatewayName() {
+        return this._getMappings().apiGateway
+    },
+
+    getLogGroupName(name) {
+        const self = this
+        var logGroup
+        _.forEach(self.provider.serverless.service.functions, (functionObj, functionName) => {
+            if (name === functionObj.name) {
+                logGroup = this._getMappings(functionName).logGroup
+                return false
+            }
+        })
+        return logGroup
+    },
+
+    setFunctionNames(provider) {
+        const self = this
+        self.provider = provider
+
+        if (self.provider) {
+            _.forEach(self.provider.serverless.service.functions, (functionObj, functionName) => {
+                if (!functionObj.events) {
+                    self.provider.serverless.service.functions[functionName].events = []
+                }
+                const mappings = self._getMappings(functionName)
+                self.provider.serverless.service.functions[functionName].name = mappings.lambda
+            })
+        }
+    },
 
     _getMappings(lambdaName) {
         if (!this.dataSource) {
@@ -20,80 +71,5 @@ module.exports = {
             data = data.replace(new RegExp('\\$lambda', 'g'), 'lambdaName')
         }
         return JSON.parse(data)
-    },
-
-    getCompiledTemplateFileName() {
-        return this._getMappings().template.compiled
-    },
-
-    getCoreTemplateFileName() {
-        return this._getMappings().template.core
-    },
-    getStackName() {
-        return this._getMappings().stack
-    },
-    getRoleName() {
-        return this._getMappings().role
-    },
-    getPolicyName() {
-        return this._getMappings().policy
-    },
-    getApiGatewayName() {
-        return this._getMappings().apiGateway
-    },
-    getLogGroupName(functionName) {
-        const self = this
-        var logGroup
-        _.forEach(self.provider.serverless.service.functions, (functionObj, name) => {
-            if (JSON.stringify(functionName).includes(name + '"') || JSON.stringify(functionName).includes(name + '-')) {
-                logGroup = this._getMappings(name).logGroup
-                return false
-            }
-        })
-        return logGroup
-    },
-    setFunctionNames(provider) {
-        const self = this
-        var mappings
-        if (!self.provider) {
-            self.provider = provider
-        }
-        if (self.provider) {
-            _.forEach(self.provider.serverless.service.functions, (functionObj, functionName) => {
-                if (!functionObj.events) {
-                    self.provider.serverless.service.functions[functionName].events = []
-                }
-                mappings = self._getMappings(functionName)
-                self.provider.serverless.service.functions[functionName].name = mappings.lambda
-            })
-        }
-    },
-    fixLogGroups(args) {
-        var cft = this.serverless.service.provider.compiledCloudFormationTemplate
-        var role = cft.Resources.IamRoleLambdaExecution
-        for (var policy of role.Properties.Policies) {
-            for (var statement of policy.PolicyDocument.Statement) {
-                statement.Resource = []
-                if (statement.Action.includes("logs:CreateLogStream")) {
-                    for (var resource of Object.keys(cft.Resources)) {
-                        if (resource.includes("LogGroup")) {
-                            statement.Resource.push({
-                                "Fn::Sub": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${" + resource + "}:*"
-                            })
-                        }
-                    }
-                }
-                if (statement.Action.includes("logs:PutLogEvents")) {
-                    for (var resource of Object.keys(cft.Resources)) {
-                        if (resource.includes("LogGroup")) {
-                            statement.Resource.push({
-                                "Fn::Sub": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${" + resource + "}:*:*"
-                            })
-                        }
-                    }
-                }
-            }
-        }
-
     }
 }
