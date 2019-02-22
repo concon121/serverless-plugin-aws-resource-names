@@ -1,29 +1,21 @@
 'use strict'
 
 const naming = require('./naming')
-const ref = {}
 
 class AWSNaming {
     constructor(serverless, options) {
-        const self = this
-        ref.self = self
         this.serverless = serverless
-        this.service = serverless.service
-        this.serverlessLog = serverless.cli.log.bind(serverless.cli)
         this.options = options
-        this.hooks = {
-            'before:package:finalize': naming.fixLogGroups.bind(this)
-        }
 
-        self.start()
-    }
+        this.provider = serverless.getProvider('aws')
 
-    start() {
-        ref.self.serverlessLog('Setting custom naming conventions...')
-        var aws = ref.self.serverless.getProvider('aws')
-        Object.assign(aws.naming, naming)
-        ref.self.serverless.cli.log('Setting custom function names...')
-        naming.setFunctionNames(aws)
+        // Overwrite the AWS provider's naming module
+        serverless.cli.log('Setting custom naming conventions...')
+        Object.assign(this.provider.naming, naming)
+
+        // Overwrite the function names
+        serverless.cli.log('Setting custom function names...')
+        naming.setFunctionNames(this.provider)
     }
 }
 module.exports = AWSNaming
