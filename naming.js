@@ -73,29 +73,24 @@ module.exports = {
         var role = cft.Resources.IamRoleLambdaExecution
         for (var policy of role.Properties.Policies) {
             for (var statement of policy.PolicyDocument.Statement) {
-                statement.Resource = statement.Resource.filter(function(value, index, arr){
+                statement.Resource = statement.Resource.filter(function(value, index, arr) {
                     return Object.values(value).filter(function (v) { return v.includes("log-group") }).length === 0;
                 });
                 if (statement.Action.includes("logs:CreateLogStream")) {
-                    for (var resource of Object.keys(cft.Resources)) {
-                        if (resource.includes("LogGroup")) {
-                            statement.Resource.push({
-                                "Fn::Sub": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${" + resource + "}:*"
-                            })
-                        }
+                    for (var resource of Object.keys(cft.Resources).filter((r) => r.includes("LogGroup"))) {
+                        statement.Resource.push({
+                            "Fn::Sub": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${" + resource + "}:*"
+                        })
                     }
                 }
                 if (statement.Action.includes("logs:PutLogEvents")) {
-                    for (var resource of Object.keys(cft.Resources)) {
-                        if (resource.includes("LogGroup")) {
-                            statement.Resource.push({
-                                "Fn::Sub": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${" + resource + "}:*:*"
-                            })
-                        }
+                    for (var resource of Object.keys(cft.Resources).filter((r) => r.includes("LogGroup"))) {
+                        statement.Resource.push({
+                            "Fn::Sub": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${" + resource + "}:*:*"
+                        })
                     }
                 }
             }
         }
-
     }
 }
