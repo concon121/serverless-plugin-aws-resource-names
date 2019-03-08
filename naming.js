@@ -73,7 +73,9 @@ module.exports = {
         var role = cft.Resources.IamRoleLambdaExecution
         for (var policy of role.Properties.Policies) {
             for (var statement of policy.PolicyDocument.Statement) {
-                statement.Resource = []
+                statement.Resource = statement.Resource.filter(function(value, index, arr){
+                    return Object.values(value).filter(function (v) { return v.includes("log-group") }).length === 0;
+                });
                 if (statement.Action.includes("logs:CreateLogStream")) {
                     for (var resource of Object.keys(cft.Resources)) {
                         if (resource.includes("LogGroup")) {
