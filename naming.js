@@ -76,28 +76,17 @@ module.exports = {
         var cft = this.serverless.service.provider.compiledCloudFormationTemplate
         var role = cft.Resources.IamRoleLambdaExecution
         for (var policy of role.Properties.Policies) {
-            for (var statement of policy.PolicyDocument.Statement) {
-                statement.Resource = []
-                if (statement.Action.includes("logs:CreateLogStream")) {
-                    for (var resource of Object.keys(cft.Resources)) {
-                        if (resource.includes("LogGroup")) {
-                            statement.Resource.push({
-                                "Fn::Sub": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${" + resource + "}:*"
-                            })
-                        }
-                    }
-                }
-                if (statement.Action.includes("logs:PutLogEvents")) {
-                    for (var resource of Object.keys(cft.Resources)) {
-                        if (resource.includes("LogGroup")) {
-                            statement.Resource.push({
-                                "Fn::Sub": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${" + resource + "}:*:*"
-                            })
-                        }
-                    }
+            for (var statement of policy.PolicyDocument.Statement.filter((s) => (s.Action.includes("logs:CreateLogStream") || s.Action.includes("logs:PutLogEvents")))) {
+                statement.Resource = statement.Resource.filter(function(value, index, arr) {
+                    return Object.values(value).filter(function (v) { return v.includes("log-group") }).length === 0;
+                });
+
+                for (var resource of Object.keys(cft.Resources).filter((r) => r.includes("LogGroup"))) {
+                    statement.Resource.push({
+                        "Fn::Sub": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${" + resource + "}:*" + (statement.Action.includes("logs:PutLogEvents") ? ":*" : "")
+                    })
                 }
             }
         }
-
     }
 }
