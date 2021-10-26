@@ -12,10 +12,9 @@ class AWSNaming {
         this.serverlessLog = serverless.cli.log.bind(serverless.cli)
         this.options = options
         this.hooks = {
+            'before:package:initialize': this.start.bind(this),
             'before:package:finalize': naming.fixLogGroups.bind(this)
         }
-
-        self.start()
     }
 
     start() {
