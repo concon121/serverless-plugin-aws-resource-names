@@ -47,7 +47,8 @@ Create the `mapping.json` file in your project and modify the names to your hear
         },
         "apiGateway": "$stage-$service",
         "lambda": "$service-$stage-$lambda",
-        "logGroup": "/aws/lambda/$service-$stage-$lambda"
+        "logGroup": "/aws/lambda/$service-$stage-$lambda",
+        "ecr": "$service-$stage"
     }
 
 ### Mapping Variable Reference
