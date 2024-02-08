@@ -2,7 +2,7 @@
 
 const fs = require('fs')
 const _ = require('lodash')
-const uuidv4 = require('uuid/v4');
+const { v4: uuidv4 } = require('uuid');
 
 module.exports = {
     dataSource: undefined,
@@ -55,6 +55,9 @@ module.exports = {
             }
         })
         return logGroup
+    },
+    getEcrRepositoryName() {
+        return this._getMappings().ecr
     },
     setFunctionNames(provider) {
         const self = this
