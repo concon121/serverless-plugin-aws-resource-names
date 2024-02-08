@@ -19,7 +19,7 @@
     "dependencies": {
         "bluebird": "^3.0.6",
         "lodash": "^4.17.4",
-        "uuid": "^3.2.1"
+        "uuid": "^9.0.1"
     },
     "devDependencies": {
         "codeclimate-test-reporter": "^0.4.1",
